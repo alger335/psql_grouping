@@ -8,10 +8,10 @@
 -- исполнителя(-ей), написавшего самый короткий по продолжительности трек (теоретически таких треков может быть несколько);
 -- название альбомов, содержащих наименьшее количество треков.
 
-SELECT name, COUNT(artist_id) FROM Genre
-JOIN GenreArtists ON genre.id = GenreArtists.genre_id
-GROUP BY genre.name;
+SELECT genre_name, COUNT(artist_id) FROM Genre
+JOIN GenreArtists ON genre.genre_id = GenreArtists.genre_id
+GROUP BY genre.genre_name;
 
-SELECT name, COUNT(id) FROM Track
-JOIN Album ON Track.id = Album.id
-WHERE year BETWEEN 2019 AND 2020
+SELECT album_id, album_name, album_year FROM Album
+-- JOIN Track ON Track.track_id = Album.album_id
+WHERE album_year BETWEEN 2015 AND 2018
