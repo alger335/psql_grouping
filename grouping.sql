@@ -15,9 +15,8 @@ SELECT a.album_name, AVG(track_duration)
 
 -- все исполнители, которые не выпустили альбомы в 2020 году;
 SELECT ar.artist_name
-	FROM album a JOIN artist ar ON a.album_id = ar.artist_id
-	WHERE a.album_year != 2020
-	GROUP BY ar.artist_name;
+  FROM album a JOIN artist ar ON a.album_id = ar.artist_id
+  WHERE a.album_year != 2020
 
 -- названия сборников, в которых присутствует конкретный исполнитель (выберите сами);
 SELECT DISTINCT collection_name FROM collection c
@@ -43,15 +42,18 @@ SELECT track_name FROM track t FULL OUTER JOIN trackscollections tc
 
 -- исполнителя(-ей), написавшего самый короткий по продолжительности трек (теоретически таких треков может быть несколько);
 SELECT artist_name, MIN(t.track_duration) FROM artist a
-	JOIN albumartists aa ON a.artist_id = aa.artist_id
-	JOIN track t ON aa.album_id = t.album_id
-	GROUP BY a.artist_name
-	ORDER BY MIN(t.track_duration)
-	LIMIT 2;
+  JOIN albumartists aa ON a.artist_id = aa.artist_id
+  JOIN track t ON aa.album_id = t.album_id
+  WHERE t.track_duration = (SELECT MIN(track_duration) FROM track)
+  GROUP BY a.artist_name
 
 -- название альбомов, содержащих наименьшее количество треков.
 SELECT album_name, COUNT(track_id) FROM album a
 JOIN track t ON a.album_id = t.album_id
 GROUP BY a.album_name
-ORDER BY COUNT(t.track_id)
-LIMIT 3;
+HAVING COUNT(track_id) = (SELECT COUNT(track_id) 
+        FROM album a
+    JOIN track t ON a.album_id = t.album_id 
+        GROUP  BY album_name 
+        ORDER  BY COUNT(t.track_id)
+        LIMIT  1)
